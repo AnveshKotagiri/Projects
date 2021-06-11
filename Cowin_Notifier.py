@@ -1,4 +1,3 @@
-from requests.models import Response
 import requests
 
 import schedule
@@ -19,7 +18,7 @@ def extract_from_cowin():
     final_url  = cowin_url_api + queryParams
     message = requests.get(final_url)
     message_json = message.json()
-    print(message_json)
+    #print(message_json)
     parse_query(message_json)
 
 
@@ -27,14 +26,14 @@ def parse_query(message_json):
     for session in message_json['sessions']:
         if session['min_age_limit']==18:
             final_message = str(session['address']) +"  "+ str(session['available_capacity'])
-            print(final_message)
+            #print(final_message)
             send_telegram_message(final_message)
      
 
 def send_telegram_message(final_message):
     final_url_request = telegram_url + final_message
     response = requests.get(final_url_request)
-    print(response.text)
+   # print(response.text)
 #print(message.text) 
 
 
