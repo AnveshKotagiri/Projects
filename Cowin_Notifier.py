@@ -1,3 +1,4 @@
+
 import requests
 
 import schedule
@@ -7,10 +8,11 @@ import time
 Token = ""
 telegram_url = "https://api.telegram.org/bot{}/sendmessage?chat_id=@Cowin_Self_Notifier&text=".format(Token)
 
-pincode = "500032"
-date = "11-06-2021"
+pincode = ""
+date = ""
 
-cowin_url_api = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByPin?"
+#I used calenderByPin Api, you can use any Api as per requirement
+cowin_url_api = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?"
 
 
 def extract_from_cowin():
@@ -23,18 +25,25 @@ def extract_from_cowin():
 
 
 def parse_query(message_json):
-    for session in message_json['sessions']:
-        if session['min_age_limit']==18:
-            final_message = str(session['address']) +"  "+ str(session['available_capacity'])
-            #print(final_message)
-            send_telegram_message(final_message)
-     
+    for center in message_json['centers']:
+        for session in center['sessions']:
+            if session['min_age_limit']==18 and session['available_capacity'] > 0:
+                final_message = str(center['address']) +"  "+ str(session['available_capacity'])
+                print(final_message)
+                send_telegram_message(final_message)
+
 
 def send_telegram_message(final_message):
     final_url_request = telegram_url + final_message
     response = requests.get(final_url_request)
-   # print(response.text)
-#print(message.text) 
+    print(response.text)
+#print(message.text)
+
+
+'''
+if __name__ == "__main__":
+    extract_from_cowin()
+'''
 
 
 schedule.every(1).minutes.do(extract_from_cowin)
